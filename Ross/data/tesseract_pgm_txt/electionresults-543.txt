@@ -1,0 +1,27 @@
+CARDIGANSHIRE [308]
+
+Election Electors Candidate Party Vota
+1832 1,184 1W.E. Powell C Unopp.
+1835 1,352 W.E. Powell C Unopp.
+1837 1,788 W.E. Powell C Unopp.
+1841 2,060 W.E. Powell C Unopp.
+1847 2,278 W.E. Powell C Unopp.
+1852 2,235 W.E. Powell C Unopp.
+[Resignation]
+1854 Earl of Lisburne C Unopp.
+(22/2)
+1857 2,723 Earl of Lisburne C Unopp.
+1859 2,586 W.T.R. Powell C 1,070
+A.H.S. Davies C 928
+1865 3,520 Sir T.D. Lloyd, Bt. L 1,510
+0. Davies L 1,149
+1868 5,1151 EM. Richards L 2,074
+EM. Vaughan C 1.918
+1874 4,438 T.E. Lloyd C 1.850
+E.M. Richards L 1,635
+1880 4,882 L.P. Pugh L 2,406
+T.E. Lloyd C 1,605
+520
+
+C0 81C
+

@@ -1,0 +1,95 @@
+Data Science Fellowship Project Proposals
+By Ariel Langer
+
+Understanding Transportation and Congestion in New York City:
+	Background:
+New York City is facing major challenges with their public transportation systems due to their technologically outdated subway system. While old infrastructure is stressing the public transportation network, Uber rides are suspected to be a cause for increased congestion on surface streets. New York is currently looking into implementing one of the highest ride share fees in the nation under their new Congestion Plan. If implemented, New York would be the first city in the US with a pay-to-drive plan. NYC ranks the third worst city in the world in terms of traffic congestion. Some interesting questions to explore would be: would this congestion pricing disproportionately affect the lower, middle, or upper class? In understanding prime locations for uber rides within the city, the demographics of individuals taking uber rides, and the role of the accessibility of public transportation in motivating an uber ride some of the issues related to congestion in NYC can be explored. 
+
+Questions to Explore/Ideas for Data Visualizations:
+Plot uber trips over time to see how aggregate number of trips has increased in the city. Compare this with population growth in NYC over same time period, have uber trips increased relative to population growth or are increases in uber trips due to increased demand for uber rides
+Plot the length of an uber ride in relation to how many ubers rides were taking place during that hour
+Is there a correlation between demand the number of uber rides and increased travel time. What could this tell us about the effects of uber on road congestion? What other comparisons or control groups could help in isolating the effects of uber on traffic congestion?
+What are the most popular uber pick up and drop off locations? Compare these to the proximity of local transportation (ex. A NYC subway station). Is uber sued when public transportation is too far away or is it used by people looking to avoid public transportation? How many uber trips were faster or slower than the equivalent nearby public transportation? Could you use google maps trip estimation algorithm to compare the length of a trip via public transportation in NYC vs a trip via the subway? Alternatively, could you compare relatively similar uber trips from several years ago to the present and see if aggregate trip times in cities for the same path have increased?
+Who relies on Uber for their daily commute? Do mostly lower, middle, or higher income individuals rely on Uber? Who would the burden of a pay-drive-tax fall on?
+
+Data Sets:
+Uber NYC trip data from April to September of 2014
+Data points:
+date/time, lat, lon, base, dispatching_base_num, pickup_date, affiliated_base_num, locationID, 
+https://github.com/fivethirtyeight/uber-tlc-foil-response
+Uber Movement data
+Can download data directly from uber for several locations
+Average data on the trip duration from one destination to another for a given range of dates
+https://movement.uber.com/cities?lang=en-US 
+
+	Comments:
+Would be interesting to try to get Uber to release more of its data to the public, especially for a city like New York City. Especially with a tax on ride sharing being considered in NYC, policy makers should have access to the appropriate data to base their decision on.
+
+Relevant Articles:
+https://www.nytimes.com/2017/05/01/nyregion/new-york-subway-signals.html
+https://www.nytimes.com/2017/02/12/nyregion/subway-complaints-straphangers-fuming.html
+https://www.nytimes.com/2017/02/23/nyregion/new-york-city-subway-ridership.html?action=click&contentCollection=N.Y.%20%2F%20Region&module=RelatedCoverage&region=Marginalia&pgtype=article
+https://www.wired.com/story/nyc-l-train-shutdown-plan/
+
+---------------------------------------------------------------------------------------------------------------------
+
+Politics of United Nations Voting Decisions:
+Background:
+For decades the effectiveness of the United Nations in enacting change has been called into question. One of the most prominent issues within the UN is the way in which countries choose to vote for or against certain foreign policy decisions based on their relationship with the issue/nation in question. I am interested in analyzing data related to the voting decisions of countries within the UN General assembly. 
+
+Questions to Explore/Potential Data Visualizations:
+How often do countries vote according to alliances? Do alliances prevail as the defining factor in decision making over moral/ethical issues?
+The DataVerse data set from Harvard listed below has analyzed voting history to produce an affinity score for nations however it seems that they have proposed that an ideal point estimation system might be more appropriate for analyzing political leanings. It would be interesting to try to apply the ideal point statistical method to this data.
+https://blogs.iq.harvard.edu/ideal_points_1
+“People have long thought about politics in spatial terms: "left" and "right" have been used to describe political preferences since at least the French Revolution, when royalists sat on the right and radicals on the left in the Legislative Assembly. Ideal point models attempt to estimate the position of each legislator on the left-right or other dimensions using the votes that they cast on legislation. Basically, the models assume that a legislator will vote in favor of a motion if it moves policy outcomes closer to their most preferred policy. The resulting estimates from these models provide a descriptive summary of the distribution of preferences within a legislature. They are also important parameters in many formal models of legislative behavior.”
+Under different presidencies how have US representatives to the UN voted? Voting in congress is strongly affected by political leanings. However, voting in the UN is not about representing the viewpoints of citizens/voters but rather about representing the values of a nation. How are actions in the UN affected by political leanings? For example, under a republican presidency are we more or less likely to vote for/against military action in another nation; are we for or against donating aid to foreign nations?
+
+Data Sets:
+Roll call votes in UN General Assembly from 1946 to 2017, affinity of nations scores from these votes until 2015
+https://dataverse.harvard.edu/dataset.xhtml?persistentId=hdl:1902.1/12379
+https://www.kaggle.com/unitednations/general-assembly 
+Data on US contribution to internal organizations, participation in United Nations, voting practices etc.
+http://www.state.gov/p/io/rls/rpt/index.htm
+
+---------------------------------------------------------------------------------------------------------------------
+
+Passing Bills in Congress
+Background:
+
+Congress has been pressed for many years to release data on the status of bills as they pass through the house. They are finally taking a step towards democratizing data related to the passing of bills by releasing bill status data. It would be interesting to analyze some of this data to learn more about what kinds of bills are passed and what factors might be responsible for why those bills were passed.
+
+Questions to Explore / Potential Data Visualizations:
+Has is been easier to pass a bill proposed by a party when that party is the majority in Congress? If so, how much easier has it been? Given this information, how likely is it that a future bill proposed by a party will pass?
+Are there specific topics where voting for bills on that topic are less/more dependant on the party proposing the bill / the majority party?
+How long did the bill stay in the house?
+Correlation between proposed cost of the bill and its status?
+
+Data Sets:
+Bill info from 2014 to 2018
+Bill name, year, bill features, bill title, etc.
+https://www.govinfo.gov/features/featured-content/bill-status-bulk-data 
+User guide:
+https://www.gpo.gov/fdsys/bulkdata/BILLSTATUS/resources/BILLSTATUS-XML_User-Guide-v1.pdf 
+
+Related Articles:
+http://fedscoop.com/congress-makes-bill-status-open-to-public 
+
+Comments:
+Would have to merge data with data about which party was the majority for 113th, 114th, 115th congress
+Would have to scrub the internet for data on which representatives proposed the bill and the corresponding party of that representative
+Would have to analyze the bill title to determine what category the bill falls under (ex. Healthcare etc.)
+
+---------------------------------------------------------------------------------------------------------------------
+Cataloging Galaxies by Spectral Signatures
+	Background:
+The Herschel project by NASA collected large quantities of far-infrared and submillimeter data. There were several different kinds of galaxy surveys within the Herschel project but one in particular called KINGFISH observed different spectral lines. Galaxies can be catalogued according to spectral signatures. 
+	Questions to Explore / Potential Data Visualizations:
+Data:
+Herschel KINGFISH data
+http://irsa.ipac.caltech.edu/data/Herschel/KINGFISH/ 
+	Related Articles:
+	Comments:
+
+---------------------------------------------------------------------------------------------------------------------
+
+
