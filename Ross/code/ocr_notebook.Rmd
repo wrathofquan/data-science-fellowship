@@ -1,20 +1,23 @@
 ---
 title: "Unlocking dusty data with OCR"
+subtitle: "A (UCB student's) library guide"
 author: "Ross Mattheis"
 output: html_notebook
 ---
 
 ```{r, include= FALSE}
-setwd("~/")
-
+require(RCurl)
+text <- read.table("https://raw.githubusercontent.com/wrathofquan/data-science-fellowship/master/Ross/data/adobe_txt/electionresults_craig2_bank_Part1.pdf.txt", quote = "", sep = "$" )
 ```
 
 If you were an administrator (let's say, a university registrar or the manager of a local unemployment relief office) the way you kept record of the folks you serviced (students, unemployed workers) would be entierly dependent on the time you were alive. Before the twentieth century, you probably made records by hand, filling out printed forms or writing in legders. For much of the twentieth century, you would have made use of a typewriter (of some sort), and, More recently, you'd enter and store records digitally. The differences in these three major periods of record keeping matter for folks who would like to recover information trapped in these records. For the most recent period, data is almost immediately accessible: researchers may only have to stumble through an outdated file format to use administrative records. In the earliest period, there is (to date) no effective technology more efficient than manual transcription.      
 
-![History from the perspective of a data-monger](/Sources_ocr.png)
+<center>
+![History from the perspective of a data-monger](https://raw.githubusercontent.com/wrathofquan/data-science-fellowship/master/Ross/code/Sources_ocr.png)
+</center>
 
 ```{r}
-plot(cars)
+
 ```
 
 ## Outline
