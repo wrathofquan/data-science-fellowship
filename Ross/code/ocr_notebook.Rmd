@@ -4,16 +4,27 @@ author: "Ross Mattheis"
 output: html_notebook
 ---
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+```{r, include= FALSE}
+setwd("~/")
 
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+```
+
+If you were an administrator (let's say, a university registrar or the manager of a local unemployment relief office) the way you kept record of the folks you serviced (students, unemployed workers) would be entierly dependent on the time you were alive. Before the twentieth century, you probably made records by hand, filling out printed forms or writing in legders. For much of the twentieth century, you would have made use of a typewriter (of some sort), and, More recently, you'd enter and store records digitally. The differences in these three major periods of record keeping matter for folks who would like to recover information trapped in these records. For the most recent period, data is almost immediately accessible: researchers may only have to stumble through an outdated file format to use administrative records. In the earliest period, there is (to date) no effective technology more efficient than manual transcription.      
+
+![History from the perspective of a data-monger](/Sources_ocr.png)
 
 ```{r}
 plot(cars)
 ```
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+## Outline
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+- Step one: Scan the document.
+- Step two: Apply OCR software (e.g. Adobe, Tesseract, ABBY).
+- Step three: Use patterns in the records to format raw text data. 
 
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+## Using OCR
+
+## From .txt to .csv
+
+## Conclusion 
