@@ -7,7 +7,10 @@ output: html_notebook
 
 ```{r, include= FALSE}
 require(RCurl)
-text <- read.table("https://raw.githubusercontent.com/wrathofquan/data-science-fellowship/master/Ross/data/adobe_txt/electionresults_craig2_bank_Part1.pdf.txt", quote = "", sep = "$" )
+require(dplyr)
+require(ggplot2)
+require(stringdist)
+
 ```
 
 If you were an administrator (let's say, a university registrar or the manager of a local unemployment relief office) the way you kept record of the folks you serviced (students, unemployed workers) would be entierly dependent on the time you were alive. Before the twentieth century, you probably made records by hand, filling out printed forms or writing in legders. For much of the twentieth century, you would have made use of a typewriter (of some sort), and, More recently, you'd enter and store records digitally. The differences in these three major periods of record keeping matter for folks who would like to recover information trapped in these records. For the most recent period, data is almost immediately accessible: researchers may only have to stumble through an outdated file format to use administrative records. In the earliest period, there is (to date) no effective technology more efficient than manual transcription.      
@@ -16,18 +19,257 @@ If you were an administrator (let's say, a university registrar or the manager o
 ![History from the perspective of a data-monger](https://raw.githubusercontent.com/wrathofquan/data-science-fellowship/master/Ross/code/Sources_ocr.png)
 </center>
 
-```{r}
+In this brief notebook, I'll illustrate the process of applying OCR to partially formatted records by digitizing parliamentary election results compiled by Craig (1979). In particular, I'll show how library resources 
+
+Here's a brief outline of the OCR workflow:
+
+## Four step approach
+
+- Step one: Scan the document.
+- Step two: Apply OCR software.
+- Step three: Use patterns in the records to format raw text data. 
+- Step four: Take advantage of multiple scans to limit errors. 
+
+## Scan
+
+Before jumping into the more technical steps of the process, a word on scanning. A substantial portion of typed sources have already been digitised as part of a collaborative project between academic libraries and Google, [hathitrust](https://www.hathitrust.org/). More likely than not, one or more scanned copies of the source you would like to use have already exist. If your source hasn't yet been scanned, reach out to a librarian before you start scanning hundreds of pages. Librarians can help disseminate the final scanned document, and may even be willing to help in the digitization process.  
+
+The scan used in this file is from Hathitrust. 
+
+## Applying OCR
+
+Fortunately, the problem of recovering text from a scanned document seems essentially solved. 
+
+There are many OCR tools including freeware (Tesseract, Gocr, Ocrad, ...) and proprietary software (Adobe, ABBY, ...).
+
+```{r, include = FALSE}
+# Loading raw text data
+txt_adobe <- read.csv("https://raw.githubusercontent.com/wrathofquan/data-science-fellowship/master/Ross/data/txt_adobe.csv")
+txt_hathi <- read.csv("https://raw.githubusercontent.com/wrathofquan/data-science-fellowship/master/Ross/data/txt_hathi.csv")
+txt_gocr <- read.csv("https://raw.githubusercontent.com/wrathofquan/data-science-fellowship/master/Ross/data/txt_gocr.csv")
+
+txt_adobe <- txt_adobe[,-1]
+txt_hathi <- txt_hathi[,-1]
+txt_gocr <- txt_gocr[,-1]
+
+txt_adobe$text <- as.character(txt_adobe$text)
+txt_hathi$text <- as.character(txt_hathi$text)
+txt_gocr$text <- as.character(txt_gocr$text)
 
 ```
 
-## Outline
+Not all OCR software is equivalent. Here's the output for the first page from Adobe: 
 
-- Step one: Scan the document.
-- Step two: Apply OCR software (e.g. Adobe, Tesseract, ABBY).
-- Step three: Use patterns in the records to format raw text data. 
+```{r}
+head(txt_adobe[txt_adobe$page == 1 , "text"] )
+```
+and the same information read by the free software, GOCR:
+```{r}
+head(txt_gocr[txt_gocr$page == 26 , "text"] )
+```
+For this exercise, I'll use the software that produced the two best results for this small project: Hathitrust's application of Tesseract, and Adobe's OCR utility. 
 
-## Using OCR
+Fortunately, UC Berkeley's library has Adobe installed on library computers. Here's a screenshot of Adobe's OCR in action on a library laptop:
+
+<center>
+![Free proprietary software for UCB students!]()
+</center>
+
 
 ## From .txt to .csv
+
+The challenge in applying OCR, then, is recovering the format that the data were originally stored in. The approach here uses patterns in the raw text to identify the rows and columns of interest.
+
+First, let's make a few observations about the structure of the data:
+- What information are on each page? Each page has information on electoral outcomes for one county 
+- How are the data formatted? (spaces between columns), the year isn't repeated, there are interruptions 
+
+
+### Getting rows in order
+
+Notice that the number of rows differs between the two best OCR results. For the adobe file, the number of identified rows is
+```{r, echo = FALSE}
+nrow(txt_adobe)
+```
+while the same number for the original text from Hathitrust
+```{r, echo = FALSE }
+nrow(txt_hathi)
+```
+The discrepancy of 80 rows means that the rows in the raw text between the two files do not always point to the same information in the original source. We can begin to address this problem by eliminating rows which seem to be devoid of useful information. In this case, I am removing rows which only contain numbers, spaces, or punctuation.  
+
+```{r }
+txt_adobe <- txt_adobe[grepl("[^[:digit:][:space:]]", txt_adobe$text),]
+txt_hathi <- txt_hathi[grepl("[^[:digit:][:space:]]", txt_hathi$text),]
+txt_adobe <- txt_adobe[grepl("[^[:punct:][:space:]]", txt_adobe$text),]
+txt_hathi <- txt_hathi[grepl("[^[:punct:][:space:]]", txt_hathi$text),]
+```
+
+*A quick digression:* I used regular expressions here to identify rows which contain characters other than spaces and digits. The line "[^stuff]" finds rows with "any string including something other than stuff." Regular expressions are a tool for working with character strings that is not (by any means) specific to $R$. Consequently, regular expressions are too large a topic to be explained in this notebook. At the same time, extracting formatted data from raw text relies *very heavily* on regular expressions, so I will use regular expressions below without explanation of what each line means (Apologies!). If you'd like to learn more about regular expressions in $R$, I'd recommend looking [here](http://stat545.com/block022_regular-expression.html)  or [here](http://uc-r.github.io/regex). 
+
+If we check again, the number of rows is now almost identical. For Adobe: 
+```{r, echo = FALSE }
+nrow(txt_adobe)
+```
+And for Hathi:
+```{r, echo = FALSE }
+nrow(txt_hathi)
+```
+Much better! 
+
+```{r, echo = FALSE }
+nrow(txt_hathi)
+```
+
+Much of the cleaning process simply involves removing unnecessary process.
+
+```{r}
+# Dropping strange fractional information
+txt_adobe$text <- gsub("\\(.+\\)","", txt_adobe$text)
+txt_hathi$text <- gsub("\\(.+\\)","", txt_hathi$text)
+txt_adobe$text <- gsub("\\[.+\\]","", txt_adobe$text)
+txt_hathi$text <- gsub("\\[.+\\]","", txt_hathi$text)
+
+# Dropping column name rows 
+txt_adobe <- subset(txt_adobe, !grepl("elect|Elect|Vote|vote|party|Party|Candidate|candidate", txt_adobe$text) )
+txt_hathi <- subset(txt_hathi, !grepl("elect|Elect|Vote|vote|party|Party|Candidate|candidate", txt_hathi$text) )
+
+# And any other empty rows 
+txt_adobe <- txt_adobe[grepl("[^[:digit:][:space:]]", txt_adobe$text),]
+txt_hathi <- txt_hathi[grepl("[^[:digit:][:space:]]", txt_hathi$text),]
+txt_adobe <- txt_adobe[grepl("[^[:punct:][:space:]]", txt_adobe$text),]
+txt_hathi <- txt_hathi[grepl("[^[:punct:][:space:]]", txt_hathi$text),]
+
+# Dropping pesky remaining punctuation
+txt_adobe$text <- gsub("[[:punct:]]","",txt_adobe$text)
+txt_hathi$text <- gsub("[[:punct:]]","",txt_hathi$text)
+```
+
+### Extracting page-level information
+
+First, we'll grab the county name which is listed at the top of each page.  
+
+```{r}
+require(dplyr)
+
+# Identifying county and # of electors
+txt_adobe %>% 
+  group_by(page) %>% 
+  mutate( countyraw = text[1],
+          seatsraw = text[2] 
+        ) %>% 
+  as.data.frame() -> txt_adobe
+
+txt_hathi %>% 
+  group_by(page) %>% 
+  mutate( countyraw = text[1],
+          seatsraw = text[2] 
+        ) %>% 
+  as.data.frame() -> txt_hathi
+
+# Dropping county and seats text
+txt_adobe <- subset(txt_adobe, text != countyraw & text != seatsraw , select = -c(seatsraw) )
+txt_hathi <- subset(txt_hathi, text != countyraw & text != seatsraw , select = -c(seatsraw) )
+
+# Cleaning county names
+txt_adobe$county <- gsub("\\(.+|\\[.+","", txt_adobe$countyraw)
+txt_adobe$county <- gsub("{2,}[[:space:]]","", txt_adobe$county)
+txt_adobe <- subset(txt_adobe, select = -c(countyraw))
+txt_hathi$county <- gsub("\\(.+|\\[.+","", txt_hathi$countyraw)
+txt_hathi$county <- gsub("{2,}[[:space:]]","", txt_hathi$county)
+txt_hathi <- subset(txt_hathi, select = -c(countyraw))
+
+# Plotting results 
+head(summary(as.factor(txt_adobe$county)))
+```
+
+### Finding observations
+
+We now take on perhaps the most difficult step in the process: identifying distinct observations. We start by taking advantages of the pattern of spacing between columns. We typically see that the first row with an election year 
+
+```{r, warning=FALSE, echo = TRUE}
+# counting the number of columns 
+txt_adobe$columns <- unlist(lapply( strsplit(txt_adobe$text,"  ") , function(x)  length(x[x != ""]) ))
+txt_hathi$columns <- unlist(lapply( strsplit(txt_hathi$text,"  ") , function(x)  length(x[x != ""]) ))
+# dropping rows with very few columns
+txt_adobe <- subset(txt_adobe, columns > 2 )
+txt_hathi <- subset(txt_hathi, columns > 1 )
+```
+
+Now that we know the number of columns in each line of raw text, we can guess which lines are the first rows of each election year. Specifically, we look fot 
+
+```{r, warning=FALSE, echo = TRUE}
+
+# Guessing which rows contain years
+txt_adobe$text <- gsub("^[[:blank:]]+","",txt_adobe$text)
+txt_adobe$elecrow <- grepl("^{3,4}[[:digit:]]", txt_adobe$text) & txt_adobe$columns > 3
+
+txt_hathi$text <- gsub("^[[:blank:]]+","",txt_hathi$text)
+txt_hathi$elecrow <- grepl("^{3,4}[[:digit:]]", txt_hathi$text) & txt_hathi$columns > 3 
+```
+
+With election rows identified, we can construct an id variable for individual elections. 
+
+```{r, warning=FALSE, echo = TRUE}
+# Generating page/election ids
+txt_adobe %>% 
+  group_by(page) %>% 
+  mutate( elecid = page*100 + cumsum(as.numeric(elecrow))  ) %>% 
+  as.data.frame() -> txt_adobe
+
+txt_hathi %>% 
+  group_by(page) %>% 
+  mutate( elecid = page*100 + cumsum(as.numeric(elecrow))  ) %>% 
+  as.data.frame() -> txt_hathi
+```
+
+Great! Now we can separate the election year as a new column, 
+
+```{r, warning=FALSE, echo = TRUE}
+
+# Adding guessed election year
+txt_adobe %>% 
+  group_by( elecid ) %>% 
+  mutate( election = substr(text[1],1,4) )  %>%
+  as.data.frame() -> txt_adobe
+txt_hathi %>% 
+  group_by( elecid ) %>% 
+  mutate( election = substr(text[1],1,4) )  %>%
+  as.data.frame() -> txt_hathi
+
+# removing election year from text and dropping bad years
+txt_adobe$text[txt_adobe$elecrow] <- gsub("^....","", txt_adobe$text[txt_adobe$elecrow] )
+txt_hathi$text[txt_hathi$elecrow] <- gsub("^....","", txt_hathi$text[txt_hathi$elecrow] )
+txt_adobe$election <- as.numeric(txt_adobe$election)
+txt_adobe$election[txt_adobe$election < 1830 | txt_adobe$election > 1885 ] <- NA
+txt_hathi$election <- as.numeric(txt_hathi$election)
+txt_hathi$election[txt_hathi$election < 1830 | txt_hathi$election > 1885 ] <- NA
+
+```
+and get a first quantitative look at the data: 
+```{r, warning=FALSE}
+
+# plotting results 
+require(ggplot2)
+plot_election <- subset(txt_adobe, select = c(election, method))
+plot_election <- rbind(plot_election, subset(txt_hathi, select = c(election, method)))
+election_year <- ggplot(plot_election, aes(x = election, colour = method )) + geom_density() + theme_bw()
+
+election_year
+
+```
+
+We can see that, although there are transcription errors in each method, the errors seem to be uncorrelated with the election year.
+
+### Finding columns
+
+Now, we can begin to separate out the other columns in the raw text. First, let's find the number of electors in each county in each year. 
+
+```{r}
+
+# Removing cumbersome spaces between numbers
+txt_adobe$text <- gsub("(?<=[[:digit:]])[[:blank:]](?=[[:digit:]])","", txt_adobe , perl = TRUE )
+txt_hathi$text <- gsub("(?<=[[:digit:]])[[:blank:]](?=[[:digit:]])","", txt_hathi , perl = TRUE )
+
+```
 
 ## Conclusion 

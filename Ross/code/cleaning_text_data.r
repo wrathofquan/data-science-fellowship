@@ -47,3 +47,13 @@ txtd_hathi <- extracttxt("~/Dropbox/Misc/lib_project/data-science-fellowship/Ros
 
 # Loading tesseract text data 
 txtd_tesseract <- extracttxt("~/Dropbox/Misc/lib_project/data-science-fellowship/Ross/data/tesseract_pgm_txt", txtd, "tesseract", "$")
+
+# Saving data for further cleaning
+setwd("~/Dropbox/Misc/lib_project/data-science-fellowship/Ross/data")
+write.csv(txtd_adobe, "txt_adobe.csv")
+write.csv(txtd_hathi, "txt_hathi.csv")
+write.csv(txtd_tesseract, "txt_tesseract.csv")
+write.csv(txtd_gocr, "txt_gocr.csv")
+write.csv(txtd_ocrad, "txt_ocrad.csv")
+
+
