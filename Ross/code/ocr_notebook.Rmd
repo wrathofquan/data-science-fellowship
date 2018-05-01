@@ -45,9 +45,9 @@ There are many OCR tools including freeware (Tesseract, Gocr, Ocrad, ...) and pr
 
 ```{r, include = FALSE}
 # Loading raw text data
-txt_adobe <- read.csv("https://raw.githubusercontent.com/wrathofquan/data-science-fellowship/master/Ross/data/txt_adobe.csv")
-txt_hathi <- read.csv("https://raw.githubusercontent.com/wrathofquan/data-science-fellowship/master/Ross/data/txt_hathi.csv")
-txt_gocr <- read.csv("https://raw.githubusercontent.com/wrathofquan/data-science-fellowship/master/Ross/data/txt_gocr.csv")
+txt_adobe <- read.csv("https://raw.githubusercontent.com/wrathofquan/data-science-fellowship/master/Ross/data/txt_adobe.csv?token=AeHbm0ipWM5CdbLkKOgEqpw0NxSajvcMks5a8RKLwA%3D%3D")
+txt_hathi <- read.csv("https://raw.githubusercontent.com/wrathofquan/data-science-fellowship/master/Ross/data/txt_hathi.csv?token=AeHbm56ASPu03KpskHfiK81afM7QcYWqks5a8RKmwA%3D%3D")
+txt_gocr <- read.csv("https://raw.githubusercontent.com/wrathofquan/data-science-fellowship/master/Ross/data/txt_gocr.csv?token=AeHbm7Fe_w6VvS8GPQqir8YfMuCmbLIPks5a8RK4wA%3D%3D")
 
 txt_adobe <- txt_adobe[,-1]
 txt_hathi <- txt_hathi[,-1]
@@ -107,20 +107,6 @@ txt_hathi <- txt_hathi[grepl("[^[:punct:][:space:]]", txt_hathi$text),]
 
 *A quick digression:* I used regular expressions here to identify rows which contain characters other than spaces and digits. The line "[^stuff]" finds rows with "any string including something other than stuff." Regular expressions are a tool for working with character strings that is not (by any means) specific to $R$. Consequently, regular expressions are too large a topic to be explained in this notebook. At the same time, extracting formatted data from raw text relies *very heavily* on regular expressions, so I will use regular expressions below without explanation of what each line means (Apologies!). If you'd like to learn more about regular expressions in $R$, I'd recommend looking [here](http://stat545.com/block022_regular-expression.html)  or [here](http://uc-r.github.io/regex). 
 
-If we check again, the number of rows is now almost identical. For Adobe: 
-```{r, echo = FALSE }
-nrow(txt_adobe)
-```
-And for Hathi:
-```{r, echo = FALSE }
-nrow(txt_hathi)
-```
-Much better! 
-
-```{r, echo = FALSE }
-nrow(txt_hathi)
-```
-
 Before moving further, lets store the raw text in a new variable so that we 
 
 ```{r}
@@ -128,8 +114,7 @@ txt_adobe$rawtext <- txt_adobe$text
 txt_hathi$rawtext <- txt_hathi$text
 ```
 
-
-Much of the cleaning process simply involves removing unnecessary process.
+Much of the cleaning process simply involves removing unnecessary information.
 
 ```{r}
 # Dropping strange fractional information
@@ -273,7 +258,7 @@ We can see that, although there are transcription errors in each method, the err
 
 Now, we can begin to separate out the other columns in the raw text. First, let's find the number of electors in each county in each year. 
 
-```{r}
+```{r, warning= FALSE}
 # Removing cumbersome spaces between numbers
 txt_adobe$text <- gsub("(?<=[[:digit:]])[[:blank:]](?=[[:digit:]])","", txt_adobe$text , perl = TRUE )
 txt_hathi$text <- gsub("(?<=[[:digit:]])[[:blank:]](?=[[:digit:]])","", txt_hathi$text , perl = TRUE )
@@ -313,7 +298,7 @@ elector_density
 
 Now we will collect the number of votes received by each candidate:
 
-```{r}
+```{r, warning = FALSE}
 
 # Extracting the number of votes received by each candidate
 txt_adobe$text <- gsub("[[:blank:]]+$","",txt_adobe$text)
@@ -346,26 +331,73 @@ contended
 
 
 
-Finally, we can identify the political party of each candidate 
+Finally, we can identify the political party of each candidate, and store the remaining text as the candidate.  
 
 ```{r}
 
 # Extracting the number of votes received by each candidate
-txt_adobe$party <- str_sub( txt_adobe$text, -1, -1 )
+txt_adobe$party <- tolower(str_sub( txt_adobe$text, -1, -1 ))
 txt_adobe$text <- str_sub( txt_adobe$text, 1, -2 )
 txt_adobe$candidate <- gsub("^[[:blank:]]+|[[:blank:]]+$","",txt_adobe$text)
+txt_adobe$party[!grepl("l|c", txt_adobe$party) ] <- NA
 
-txt_hathi$party <- str_sub( txt_hathi$text, -1, -1 )
+txt_hathi$party <- tolower(str_sub( txt_hathi$text, -1, -1 ))
 txt_hathi$text <- str_sub( txt_hathi$text, 1, -2 )
 txt_hathi$candidate <- gsub("^[[:blank:]]+|[[:blank:]]+$","",txt_hathi$text)
+txt_hathi$party[!grepl("l|c", txt_hathi$party) ] <- NA
 
 ```
 
 
 ### From candidate to County/election panel
 
+Ultimately, I would like an (unbalanced) data set at the level of county/election. 
+
+```{r}
+
+txt_adobe %>% 
+  group_by(elecid) %>% 
+  summarize( page = page[1],
+             method = method[1],
+             county = county[1],
+             election = election[1],
+             electors = electors[1],
+             totalvotes = sum(na.omit(votes)),
+             contended = contended[1],
+             liberal_votes = sum(na.omit(votes[party == "l"])),
+             conservative_votes = sum(na.omit(votes[party == "c"])) ) %>%
+  as.data.frame() -> data_adobe
+
+data_adobe$liberal_share <- data_adobe$liberal_votes / data_adobe$totalvotes
+
+txt_hathi %>% 
+  group_by(elecid) %>% 
+  summarize( page = page[1],
+             method = method[1],
+             county = county[1],
+             election = election[1],
+             electors = electors[1],
+             totalvotes = sum(na.omit(votes)),
+             contended = contended[1],
+             liberal_votes = sum(na.omit(votes[party == "l"])),
+             conservative_votes = sum(na.omit(votes[party == "c"])) ) %>%
+  as.data.frame() -> data_hathi
+
+data_hathi$liberal_share <- data_hathi$liberal_votes / data_hathi$totalvotes
 
 
+```
+
+Now we can look at how the liberal vote share changed in counties over time 
+
+```{r, warning=FALSE}
+
+lib <- ggplot(data_adobe, aes(x = election, y = liberal_share )) + 
+      geom_jitter(alpha = 0.2) + theme_bw() + geom_smooth()
+
+lib
+
+```
 ## Taking advantage of multiplicity
 
 
