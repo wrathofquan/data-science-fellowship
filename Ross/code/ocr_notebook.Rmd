@@ -17,7 +17,7 @@ require(stringdist)
 If you were an administrator (let's say, a university registrar or the manager of a local unemployment relief office) the way you kept record of the folks you serviced (students, unemployed workers) would be entierly dependent on the time you were alive. Before the twentieth century, you probably made records by hand, filling out printed forms or writing in legders. For much of the twentieth century, you would have made use of a typewriter (of some sort), and, More recently, you'd enter and store records digitally. The differences in these three major periods of record keeping matter for folks who would like to recover information trapped in these records. For the most recent period, data is almost immediately accessible: researchers may only have to stumble through an outdated file format to use administrative records. In the earliest period, there is (to date) no effective technology more efficient than manual transcription.      
 
 <center>
-![History from the perspective of a data-monger](https://raw.githubusercontent.com/wrathofquan/data-science-fellowship/master/Ross/code/Sources_ocr.png)
+![History from the perspective of a data-monger](https://raw.githubusercontent.com/wrathofquan/data-science-fellowship/master/Ross/code/Sources_ocr.png?token=AeHbm2I4sj1XAD9isEYfpCwYTX36X3Jqks5a8cxFwA%3D%3D)
 </center>
 
 In this brief notebook, I'll illustrate the process of applying OCR to partially formatted records by digitizing parliamentary election results compiled by Craig (1979). In particular, I'll show how library resources 
@@ -73,7 +73,7 @@ For this exercise, I'll use the software that produced the two best results for 
 Fortunately, UC Berkeley's library has Adobe installed on library computers. Here's a screenshot of Adobe's OCR in action on a library laptop:
 
 <center>
-![Free proprietary software for UCB students!](https://raw.githubusercontent.com/wrathofquan/data-science-fellowship/master/Ross/code/screenshot.png)
+![Free proprietary software for UCB students!](https://raw.githubusercontent.com/wrathofquan/data-science-fellowship/master/Ross/code/screenshot.png?token=AeHbmyPWmalX7_T6HFiyGW_q3po78yTVks5a8cxIwA%3D%3D)
 </center>
 
 
@@ -107,14 +107,14 @@ txt_hathi <- txt_hathi[grepl("[^[:punct:][:space:]]", txt_hathi$text),]
 
 *A quick digression:* I used regular expressions here to identify rows which contain characters other than spaces and digits. The line "[^stuff]" finds rows with "any string including something other than stuff." Regular expressions are a tool for working with character strings that is not (by any means) specific to $R$. Consequently, regular expressions are too large a topic to be explained in this notebook. At the same time, extracting formatted data from raw text relies *very heavily* on regular expressions, so I will use regular expressions below without explanation of what each line means (Apologies!). If you'd like to learn more about regular expressions in $R$, I'd recommend looking [here](http://stat545.com/block022_regular-expression.html)  or [here](http://uc-r.github.io/regex). 
 
-Before moving further, lets store the raw text in a new variable so that we 
+Before moving further, lets store the raw text in a new variable so that we don't lose this information in the cleaning process.
 
 ```{r}
 txt_adobe$rawtext <- txt_adobe$text
 txt_hathi$rawtext <- txt_hathi$text
 ```
 
-Much of the cleaning process simply involves removing unnecessary information.
+Much of the cleaning process simply involves removing unnecessary information!
 
 ```{r}
 # Dropping strange fractional information
@@ -364,11 +364,16 @@ txt_adobe %>%
              electors = electors[1],
              totalvotes = sum(na.omit(votes)),
              contended = contended[1],
+             unopposed_party = party[contended == FALSE][1],
              liberal_votes = sum(na.omit(votes[party == "l"])),
+             liberal_candidates = sum(na.omit(party == "l")),
+             candidates = n(),
              conservative_votes = sum(na.omit(votes[party == "c"])) ) %>%
   as.data.frame() -> data_adobe
 
 data_adobe$liberal_share <- data_adobe$liberal_votes / data_adobe$totalvotes
+data_adobe$liberal_seat <- as.numeric( data_adobe$liberal_votes > data_adobe$conservative_votes )
+data_adobe$liberal_seat[data_adobe$unopposed_party == "l"] <- 1
 
 txt_hathi %>% 
   group_by(elecid) %>% 
@@ -379,11 +384,16 @@ txt_hathi %>%
              electors = electors[1],
              totalvotes = sum(na.omit(votes)),
              contended = contended[1],
+             unopposed_party = party[contended == FALSE][1],
              liberal_votes = sum(na.omit(votes[party == "l"])),
+             liberal_candidates = sum(na.omit(party == "l")),
+             candidates = n(),
              conservative_votes = sum(na.omit(votes[party == "c"])) ) %>%
   as.data.frame() -> data_hathi
 
 data_hathi$liberal_share <- data_hathi$liberal_votes / data_hathi$totalvotes
+data_hathi$liberal_seat <- as.numeric( data_hathi$liberal_votes > data_hathi$conservative_votes )
+data_hathi$liberal_seat[data_hathi$unopposed_party == "l"] <- 1
 
 
 ```
@@ -392,15 +402,65 @@ Now we can look at how the liberal vote share changed in counties over time
 
 ```{r, warning=FALSE}
 
-lib <- ggplot(data_adobe, aes(x = election, y = liberal_share )) + 
-      geom_jitter(alpha = 0.2) + theme_bw() + geom_smooth()
+lib <- ggplot(data_adobe, aes(x = election, y = liberal_seat)) + 
+       theme_bw() + geom_smooth() + geom_hline(yintercept = 0.5, type = 2)
 
 lib
 
 ```
-## Taking advantage of multiplicity
+
+## Multiplicity 
+
+How do our results compare for each implementation of OCR? To compare transcribed variables, we can merge election/years together. 
+
+```{r}
+# generating variable IDs
+data_adobe$merge <- paste( as.character(data_adobe$page), as.character(data_adobe$election), sep = " ")
+data_hathi$merge <- paste( as.character(data_hathi$page), as.character(data_hathi$election), sep = " ")
+
+# Mergeing 
+data <- merge(data_adobe, data_hathi, by = "merge", all = TRUE)
+
+```
+
+Now what proportion of results are exactly the same for the two methods? If we look at the number of liberal votes, we can see that a fair proportion of observations have the exact value transcribed. Others have some relatively small error (this is the cloud around the diagonal), and still others completely missed liberal candidates in elections. In fact, the number of liberal votes is exactly the same for 65% of candidates.
 
 
+```{r}
+# Checking data quality 
+test <- ggplot(data, aes(x = log(liberal_votes.x ), y = log(liberal_votes.y ))) + geom_point(alpha = 0.1) + theme_bw()
+test
+```
 
-## Conclusion 
+We can take advantage of having multiple iterations of the data set. If transcription errors are somewhat independent, then we can take only the best observations from each iteration. There are many ways that we could exploit the multiplicity of our data, but I'll take a very simple approach here. I'll keep observations if they are exactly the same for the two years, and prefer one method over another if observations are missing. 
+
+```{r}
+
+varlist <- unique( gsub("\\.x|\\.y" , "", colnames(data[,2:ncol(data)]))  )
+
+for(var in varlist){
+varx <- paste(var, "x", sep = "." )
+vary <- paste(var, "y", sep = "." )
+data[,var] <- NA
+good <- which(as.character(data[,varx]) == as.character(data[,vary]))
+xbetter <- which(is.na(data[,vary])) 
+ybetter <- which(is.na(data[,varx]))
+data[good,var] <- data[good,varx] 
+data[xbetter,var] <- data[xbetter,varx] 
+data[ybetter,var] <- data[ybetter,vary] 
+}
+
+```
+
+
+Now we can revisit earlier results
+
+```{r}
+contendednew <- ggplot(subset(data, election < 1882) , aes(x = election, y = as.numeric(contended))) + 
+       theme_bw() + geom_smooth() + labs(y = "Contended election") + geom_vline(xintercept = 1867)
+
+contendednew
+```
+
+
 
