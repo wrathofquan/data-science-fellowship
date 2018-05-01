@@ -8,6 +8,7 @@ output: html_notebook
 ```{r, include= FALSE}
 require(RCurl)
 require(dplyr)
+require(stringr)
 require(ggplot2)
 require(stringdist)
 
@@ -72,7 +73,7 @@ For this exercise, I'll use the software that produced the two best results for 
 Fortunately, UC Berkeley's library has Adobe installed on library computers. Here's a screenshot of Adobe's OCR in action on a library laptop:
 
 <center>
-![Free proprietary software for UCB students!]()
+![Free proprietary software for UCB students!](https://raw.githubusercontent.com/wrathofquan/data-science-fellowship/master/Ross/code/screenshot.png)
 </center>
 
 
@@ -119,6 +120,14 @@ Much better!
 ```{r, echo = FALSE }
 nrow(txt_hathi)
 ```
+
+Before moving further, lets store the raw text in a new variable so that we 
+
+```{r}
+txt_adobe$rawtext <- txt_adobe$text
+txt_hathi$rawtext <- txt_hathi$text
+```
+
 
 Much of the cleaning process simply involves removing unnecessary process.
 
@@ -204,7 +213,7 @@ txt_adobe$text <- gsub("^[[:blank:]]+","",txt_adobe$text)
 txt_adobe$elecrow <- grepl("^{3,4}[[:digit:]]", txt_adobe$text) & txt_adobe$columns > 3
 
 txt_hathi$text <- gsub("^[[:blank:]]+","",txt_hathi$text)
-txt_hathi$elecrow <- grepl("^{3,4}[[:digit:]]", txt_hathi$text) & txt_hathi$columns > 3 
+txt_hathi$elecrow <- grepl("^{3,4}[[:digit:]]", txt_hathi$text) & txt_hathi$columns > 1 
 ```
 
 With election rows identified, we can construct an id variable for individual elections. 
@@ -265,11 +274,101 @@ We can see that, although there are transcription errors in each method, the err
 Now, we can begin to separate out the other columns in the raw text. First, let's find the number of electors in each county in each year. 
 
 ```{r}
-
 # Removing cumbersome spaces between numbers
-txt_adobe$text <- gsub("(?<=[[:digit:]])[[:blank:]](?=[[:digit:]])","", txt_adobe , perl = TRUE )
-txt_hathi$text <- gsub("(?<=[[:digit:]])[[:blank:]](?=[[:digit:]])","", txt_hathi , perl = TRUE )
+txt_adobe$text <- gsub("(?<=[[:digit:]])[[:blank:]](?=[[:digit:]])","", txt_adobe$text , perl = TRUE )
+txt_hathi$text <- gsub("(?<=[[:digit:]])[[:blank:]](?=[[:digit:]])","", txt_hathi$text , perl = TRUE )
+
+# Extracting the number of electors   
+txt_adobe$text <- gsub("^[[:blank:]]+","",txt_adobe$text)
+txt_adobe$has_electors <- grepl("^\\d+",txt_adobe$text )
+txt_adobe$electors <- NA
+txt_adobe$electors[txt_adobe$has_electors] <- as.numeric(unlist(lapply(strsplit(txt_adobe$text[txt_adobe$has_electors],"  "), "[[",1 )))
+txt_adobe$electors[ txt_adobe$electors > 15000 ] <- NA
+txt_adobe$text[txt_adobe$has_electors] <- gsub("^[[:digit:]]+","", txt_adobe$text[txt_adobe$has_electors] )
+
+
+txt_hathi$text <- gsub("^[[:blank:]]+","",txt_hathi$text)
+txt_hathi$has_electors <- grepl("^\\d+",txt_hathi$text )
+txt_hathi$electors <- NA
+txt_hathi$electors[txt_hathi$has_electors] <- as.numeric(unlist(lapply(strsplit(txt_hathi$text[txt_hathi$has_electors],"  "), "[[",1 )))
+txt_hathi$electors[ txt_hathi$electors > 15000 ] <- NA
+txt_hathi$text[txt_hathi$has_electors] <- gsub("^[[:digit:]]+","", txt_hathi$text[txt_hathi$has_electors] )
 
 ```
 
+And now we can look at the distribution of electors in each sample:
+
+```{r, warning=FALSE}
+
+# plotting results 
+require(ggplot2)
+plot_electors <- subset(txt_adobe, select = c(electors, method))
+plot_electors <- rbind(plot_electors, subset(txt_hathi, select = c(electors, method)))
+elector_density <- ggplot(plot_electors, aes(x = electors, colour = method )) + geom_density() + theme_bw()
+
+elector_density
+
+```
+
+
+Now we will collect the number of votes received by each candidate:
+
+```{r}
+
+# Extracting the number of votes received by each candidate
+txt_adobe$text <- gsub("[[:blank:]]+$","",txt_adobe$text)
+txt_adobe$support <- gsub("[[:space:]]","",str_sub( txt_adobe$text, -6, -1 ))
+txt_adobe$votes <- as.numeric(txt_adobe$support)
+txt_adobe$contended <- !grepl("uno|unopp|opp|Unopp|Unop",txt_adobe$support) 
+txt_adobe$text <- str_sub( txt_adobe$text, 1, -6 )
+txt_adobe$text <- gsub("[[:blank:]]+$","",txt_adobe$text)
+
+txt_hathi$text <- gsub("[[:blank:]]+$","",txt_hathi$text)
+txt_hathi$support <- gsub("[[:space:]]","",str_sub( txt_hathi$text, -6, -1 ))
+txt_hathi$votes <- as.numeric(txt_hathi$support)
+txt_hathi$contended <- !grepl("uno|unopp|opp|Unopp|Unop",txt_hathi$support) 
+txt_hathi$text <- str_sub( txt_hathi$text, 1, -6 )
+txt_hathi$text <- gsub("[[:blank:]]+$","",txt_hathi$text)
+
+```
+
+Now we can answer the question: did parliamentary elections become more competative over the period?
+```{r, warning=FALSE}
+
+# plotting results 
+require(ggplot2)
+contended <- ggplot(txt_adobe, aes(x = election, colour = contended)) + geom_density() + theme_bw() + 
+  geom_vline(xintercept = 1832) + geom_vline(xintercept = 1867) 
+
+contended
+
+```
+
+
+
+Finally, we can identify the political party of each candidate 
+
+```{r}
+
+# Extracting the number of votes received by each candidate
+txt_adobe$party <- str_sub( txt_adobe$text, -1, -1 )
+txt_adobe$text <- str_sub( txt_adobe$text, 1, -2 )
+txt_adobe$candidate <- gsub("^[[:blank:]]+|[[:blank:]]+$","",txt_adobe$text)
+
+txt_hathi$party <- str_sub( txt_hathi$text, -1, -1 )
+txt_hathi$text <- str_sub( txt_hathi$text, 1, -2 )
+txt_hathi$candidate <- gsub("^[[:blank:]]+|[[:blank:]]+$","",txt_hathi$text)
+
+```
+
+
+### From candidate to County/election panel
+
+
+
+## Taking advantage of multiplicity
+
+
+
 ## Conclusion 
+
