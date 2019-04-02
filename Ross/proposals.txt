@@ -1,9 +1,0 @@
-Ross’s Proposal 
-Motivation - Why did elites extend the franchise? Previous work suggests that, in response to a threat of social violence, elites expand voting rights because they cannot credibly commit to sustained redistribution. Is the safety net an effective means of mitigating social violence? 
-Context - During the American Civil War, the blockade of Southern ports led to a dramatic spike in raw cotton prices. Highly concentrated cotton spinning regions in England were devastated by the supply shock, resulting in local unemployment rates as high as 30%. In the depth of the recession, the Public Works (Cotton Manufacturing Districts) Act of 1863 provided loans for public works projects in cotton spinning regions to relieve unemployed workers.   
-Proposal - Digitize parliamentary election results, poor law expenditures and receipts, and judicial statistics records via OCR. 
-Methods - fOCR.  
-
-
-Acemoglu, D., & Robinson, J. A. (2001). A theory of political transitions. American Economic Review, 91(4), 938–963. https://doi.org/10.1257/aer.91.4.938
- 

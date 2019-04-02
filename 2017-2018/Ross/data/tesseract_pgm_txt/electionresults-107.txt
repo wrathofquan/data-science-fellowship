@@ -1,0 +1,113 @@
+Election Electors
+1832 919
+1835 960
+1837 1 .324
+1841 2,003
+1847 2,345
+
+[Election declared void on petition]
+
+1848 2,345
+(29/6)
+
+[Election declared void on petition]
+
+1848 2,345
+(4/9)
+
+1852 2,400
+[Death]
+
+1355 2,147 '
+(14/7)
+
+CHELTENHAM [45]
+
+Cand “date
+
+Hon. C.F. Berkeley
+
+Hon. C.F. Berkeley
+W.P. Gaskell
+
+Hon. C.F. Berkeley
+J. Peel
+
+Hon. C.F. Berkeley
+J.A. Gardner
+T.P. Thompson
+
+Sir W. Jones, Bt.
+Hon. C.F. Berkeley
+E.C. Smith
+
+Hon. C.F. Berkeley
+J.A. Gardner
+
+C.L.G. Berkeley
+8. Eseott
+
+Hon. C.F. Berkeley
+Sir W. Jones, Bt.
+
+C.L.G. Berkeley
+W. Flidler
+
+[Resignation on appointment as a Commissioner of Customs]
+
+1856 2,170'
+(8/5)
+
+1857 2,170
+1859 2,171
+1865 2,793
+1868 3.5361
+
+C0 81C
+
+F.W.F. Berkeley
+E.G. Hellewell
+
+F.W.F. Berkeley
+
+F.W.F. Berkeley
+C. Schraiber
+
+C. Schreiber
+Hon. F.W.F. Berkeley
+
+H.B. Samuelson
+J.T.A. Gardner
+
+84
+
+Party Votes
+L Unopp.
+L 41 1
+L 25
+L 632
+C 298
+L 764
+C 655
+L 4
+C 1 .015
+L 90 7
+C 4
+L 1,024
+C 848
+L 986
+C 835
+L 999
+C 869
+L 760
+C 178
+L 841
+C 655
+L Uno pp.
+L 922
+C 9 10
+C 1 .15 7
+L 1 ,129
+L 1,546
+C 1.458
+

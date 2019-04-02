@@ -1,0 +1,120 @@
+Election Eiecton
+1832 1.242
+[Resignation]
+
+1834 1,261
+(24/3)
+
+1835 1,510
+[Resignation]
+
+1836 1,465
+(17/3)
+
+1837 1,610
+1841 1,324“
+1847 1,060
+1852 1,342
+1857 1,305
+[Death]
+
+1857 1,349
+(1 1/12)
+
+1859 1,370
+1865 1.361
+1868 3,264
+1874 5,083
+1880 4.979
+[Resignation]
+
+1884 5,688
+(18/2)
+
+CL) 81C
+
+PAISLEY [334]
+
+Candidate
+
+Sir J. Maxwell, Bt.
+J. McKorrell
+
+Sir D.K. Sandford
+J. Crawford
+J.E. Gordon
+
+A.G. Spain
+H. Ross
+
+A. Hattie
+J. Avtoun
+
+A. Hattie
+
+A. Hastie
+W. Thomason
+
+A. Hattie
+
+A. Home
+W.T. Haly
+
+A. Hattie
+H.E.C. Ewing
+C.F.F. Wordsworth
+
+H.E.C. Ewing
+W.T. Hely
+
+H.E.C. Ewing
+
+H.E.C. Ewing
+
+H.E.C. Ewing
+A.C. Campbell
+A. Kintru
+
+W. Holrm
+
+W. Holrns
+
+S. Clerk
+Lord Ernest Hamilton
+
+657
+
+Party Votes
+L 775
+C 180
+L 542
+L 509
+C 29
+L 661
+C 477
+L 680
+L 529
+L Unopp.
+L 1 57
+Ch 0
+L Unopp.
+L 406
+L 374
+L 61 1
+
+L 524
+Ch 4
+L 767
+L g 98
+L Unopp.
+L Unopp
+L 1 .576
+C 921
+
+L 421
+
+L U nopp
+L Unopp.
+L 3.049
+C 1 .806
+

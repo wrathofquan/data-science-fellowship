@@ -1,0 +1,39 @@
+WOODSTOCK [195)
+
+Election Electors Candidate Party Votes
+1832 317 Marquess of Blendford C Unopp.
+1835 306 Lord Charles Churchill C Unopp.
+1837 330 H. Peyton C 126
+Lord Charles Churchill C 117
+[Resignation]
+1838 385 Marquess of Blendford C 160
+(11/5) Lord John Churchill L 155
+[Succession to the Peerage — Duke of Marlborough]
+1840 F. Thesiger C Unopp.
+(20/3)
+1841 356 F. Thesiger C Unopp.
+[Resignation on appointment as Solicitor-General and decision to contest Abingdon]
+1844 Marquess of Blendford C Unopp.
+(22/4)
+[Resignation]
+1845 Viscount Loftus C Unopp.
+(1/5)
+[Succession to the Peerage -— Marquess of Ely]
+1845 Lord Alfred Churchill C Unopp.
+(18/12)
+1847 404 Marquess of Blandford C Unopp.
+1852 347 Marquess of Blandford C Unopp.
+1857 336 Marquess of Blandford C Unopp.
+[Succession to the Peerage — Duke of Marlborough]
+1857 Lord Alfred Churchill C Unopp.
+(24/7)
+1859 310 Lord Alfred Churchill C Unopp.
+1865 286 H. Barnett C 143
+M. Henry L 119
+1868 1,127 H. Barnett C 502
+Hon. G.C. Brodrick L 481
+
+340
+
+C0 81C
+
