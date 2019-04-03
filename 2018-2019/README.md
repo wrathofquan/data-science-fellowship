@@ -15,7 +15,14 @@
 
 - Share how problems are articulated and framed and what kind of critical thinking went into approaching the problem
 
-- 
+- Create static visualizations
+
+- Provide a vision for future work
+
+
+## Parking Lot for other ideas
+
+![](https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif) 
 
 
 
